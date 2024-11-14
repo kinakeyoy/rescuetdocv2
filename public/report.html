@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reportar Documento</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div id="header"></div>
+  <div class="container">
+    <h1>Reportar Documento Perdido</h1>
+    <form id="report-form">
+      <div class="form-group">
+        <label for="document-name">Nombre que aparece en el Documento:</label>
+        <input type="text" class="form-control" id="document-name" required>
+      </div>
+      <div class="form-group">
+        <label for="document-type">Tipo del Documento:</label>
+        <input type="text" class="form-control" id="document-type" required>
+      </div>
+      <div class="form-group">
+        <label for="document-number">Número del Documento:</label>
+        <input type="text" class="form-control" id="document-number" required>
+      </div>
+      <div class="form-group">
+        <label for="found-location">Lugar donde fue encontrado:</label>
+        <input type="text" class="form-control" id="found-location" required>
+      </div>
+      <div class="form-group">
+        <label for="description">Descripción:</label>
+        <textarea class="form-control" id="description" rows="3" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="document-photo">Foto del Documento:</label>
+        <input type="file" class="form-control-file" id="document-photo" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Reportar</button>
+    </form>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Cargar el header
+    fetch('header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('header').innerHTML = data;
+        // Agregar funcionalidad de cerrar sesión
+        document.getElementById('logout-btn').addEventListener('click', () => {
+          firebase.auth().signOut().then(() => {
+            window.location.href = 'login.html';
+          }).catch((error) => {
+            console.error('Error al cerrar sesión: ', error);
+          });
+        });
+      });
+
+    // Mostrar el email del usuario
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        // User is signed in
+        const userEmail = user.email;
+        document.getElementById('user-email').textContent = userEmail;
+      } else {
+        // No user is signed in
+        document.getElementById('user-email').textContent = '';
+      }
+    });
+      
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+      }
+    });
+
+  </script>
+</body>
+</html>
+
+

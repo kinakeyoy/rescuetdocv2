@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listar Documentos</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="header"></div>
+  <div class="container mt-4">
+    <h1>Documentos Reportados</h1>
+    <div id="document-list" class="mt-4"></div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Cargar el header
+    fetch('header.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('header').innerHTML = data;
+        // Agregar funcionalidad de cerrar sesión
+        document.getElementById('logout-btn').addEventListener('click', () => {
+          firebase.auth().signOut().then(() => {
+            window.location.href = 'login.html';
+          }).catch((error) => {
+            console.error('Error al cerrar sesión: ', error);
+          });
+        });
+      });
+
+        // Mostrar el email del usuario
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        // User is signed in
+        const userEmail = user.email;
+      
+
+        document.getElementById('user-email').textContent = userEmail;
+      } else {
+        // No user is signed in
+        console.error('Sin User ', error);
+      }
+    });
+
+   
+
+       // Check if user is defined
+    //    if (typeof user !== 'undefined') {
+    //   storageRef.put(file).then(() => {
+    //     storageRef.getDownloadURL().then((url) => {
+    //       db.collection('documents').add({
+    //         documentName: documentName || "defaultName", // Provide a default value if undefined
+    //         description: description,
+    //         photoURL: url,
+    //         userId: user.uid,
+    //         userName: user.nombre,
+    //         userEmail: user.email,
+    //         userPhone: user.telefono,
+    //         timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    //       }).then(() => {
+    //         alert('Documento reportado exitosamente');
+    //         reportForm.reset();
+    //         listDocuments(); // Call the function to list documents after adding a new one
+    //       }).catch((error) => {
+    //         console.error('Error al reportar documento: ', error);
+    //       });
+    //     });
+    //   });
+    // } else {
+    //   console.error('User is not defined');
+    // }
+
+
+
+// Listar documentos reportados
+const documentListDiv = document.getElementById('document-list');
+function listDocuments() {
+  documentListDiv.innerHTML = ''; // Limpiar la lista antes de agregar nuevos elementos
+  db.collection('documents').get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      const document = doc.data();
+      documentListDiv.innerHTML += `
+        <div class="card mb-3">
+          <div class="row no-gutters">
+            <div class="col-md-4">
+              <img src="${document.photoURL}" class="card-img" alt="${document.documentName}">
+            </div>
+            <div class="col-md-8">
+              <div class="card-body">
+            
+
+                <h5 class="card-title">${document.documentName}</h5>
+                <p class="card-text">${document.documentDescription}</p>
+                <p class="card-text"><small class="text-muted">Tipo de documento: ${document.documentType}</small></p>
+                <p class="card-text"><small class="text-muted">Número de documento: ${document.documentNumber}</small></p>
+                <p class="card-text"><small class="text-muted">Ubicación encontrada: ${document.documentLocation}</small></p>
+                <p class="card-text"><small class="text-muted">Reportado por: ${document.reporterName}</small></p>
+                <p class="card-text"><small class="text-muted">Cédula Del reportador: ${document.cedulaReportador}</small></p>
+                <p class="card-text"><small class="text-muted">Contacto: ${document.reporterPhone}</small></p>
+                <p class="card-text"><small class="text-muted">Fecha de reporte: ${document.timestamp.toDate()}</small></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  }).catch((error) => {
+    console.error('Error al listar documentos: ', error);
+  });
+}
+
+// Llamar a la función para listar documentos al cargar la página
+listDocuments();
+
+
+   
+  </script>
+</body>
+</html>
